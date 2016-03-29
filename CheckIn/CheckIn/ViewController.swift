@@ -1,9 +1,11 @@
 //
 //  ViewController.swift
-//  QRReaderDemo
+//  CheckIn
 //
-//  Created by Simon Ng on 23/11/14.
-//  Copyright (c) 2014 AppCoda. All rights reserved.
+//  Created by Patrick Xu on 3/28/16.
+//  Copyright © 2016 DALI. All rights reserved.
+//
+//  Code snippet by Simon Ng from AppCoda
 //
 
 import UIKit
@@ -102,6 +104,7 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
             let barCodeObject = videoPreviewLayer?.transformedMetadataObjectForMetadataObject(metadataObj)
             qrCodeFrameView?.frame = barCodeObject!.bounds
             
+            // update metadata- add stuff here!
             if metadataObj.stringValue != nil {
                 messageLabel.text = metadataObj.stringValue
             }

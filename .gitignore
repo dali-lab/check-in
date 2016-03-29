@@ -1,5 +1,8 @@
+## OSX
 .DS_Store
 
+## env variables
+dali_hrbot_env_var.txt
 
 # Xcode
 #

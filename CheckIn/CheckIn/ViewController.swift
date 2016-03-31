@@ -76,6 +76,16 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
             return
         }
         
+        var keys: NSDictionary?
+        if let path = NSBundle.mainBundle().pathForResource("keys", ofType: "plist") {
+            keys = NSDictionary(contentsOfFile: path)
+        }
+        
+        // send message
+        if let _ = keys {
+//            let twilioSID  = keys?["twilioSID"] as! String
+        }
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -110,5 +120,7 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
             }
         }
     }
+    
+    
 }
 

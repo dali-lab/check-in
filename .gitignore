@@ -1,7 +1,7 @@
 .DS_Store
 
-# keys
-keys.plist
+# secret 
+secret.plist
 
 # Xcode
 #

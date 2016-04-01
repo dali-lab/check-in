@@ -10,6 +10,7 @@
 
 import UIKit
 import AVFoundation
+import Alamofire
 
 class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     
@@ -18,6 +19,8 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     var captureSession:AVCaptureSession?
     var videoPreviewLayer:AVCaptureVideoPreviewLayer?
     var qrCodeFrameView:UIView?
+    
+    var url:String?
     
     // Added to support different barcodes
     let supportedBarCodes = [AVMetadataObjectTypeQRCode, AVMetadataObjectTypeCode128Code, AVMetadataObjectTypeCode39Code, AVMetadataObjectTypeCode93Code, AVMetadataObjectTypeUPCECode, AVMetadataObjectTypePDF417Code, AVMetadataObjectTypeEAN13Code, AVMetadataObjectTypeAztecCode]
@@ -77,13 +80,13 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         }
         
         var keys: NSDictionary?
-        if let path = NSBundle.mainBundle().pathForResource("keys", ofType: "plist") {
+        if let path = NSBundle.mainBundle().pathForResource("secret", ofType: "plist") {
             keys = NSDictionary(contentsOfFile: path)
         }
         
         // send message
         if let _ = keys {
-//            let twilioSID  = keys?["twilioSID"] as! String
+            url  = keys?["hrbot_url"] as! String
         }
         
     }
@@ -117,10 +120,38 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
             // update metadata- add stuff here!
             if metadataObj.stringValue != nil {
                 messageLabel.text = metadataObj.stringValue
+                checkUserIntoHRBot(metadataObj.stringValue)
             }
         }
     }
     
-    
+    func checkUserIntoHRBot(string: String?) {
+        
+        var data = [ // json data
+            "username": "error"
+        ]
+        data["username"] = "1"
+
+        if let _ = string {
+            do {
+                // example json string
+                // var jsonStr = "{\"weather\":[{\"id\":804,\"main\":\"Clouds\",\"description\":\"overcast clouds\",\"icon\":\"04d\"}],}"
+                var data = string!.dataUsingEncoding(NSASCIIStringEncoding, allowLossyConversion: false)
+                var json: AnyObject! = try NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers)
+
+                if let username = json["username"] as? String {
+//                    data["username"] = "1"
+                }
+            } catch {
+                print("error serializing JSON: \(error)")
+            }
+        }
+        
+        if let _ = url {
+            Alamofire.request(.POST, url!, parameters: data, encoding: .JSON)
+        } else {
+            // error; no url from secret.plist
+        }
+    }
 }
 

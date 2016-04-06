@@ -20,7 +20,8 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     var videoPreviewLayer:AVCaptureVideoPreviewLayer?
     var qrCodeFrameView:UIView?
     
-    var url:String?
+    var url: String? // hrbot heroku url
+    var checkedInUsers: Set<String> = [] // users already checked in; don't recheck them in!
     
     // Added to support different barcodes
     let supportedBarCodes = [AVMetadataObjectTypeQRCode, AVMetadataObjectTypeCode128Code, AVMetadataObjectTypeCode39Code, AVMetadataObjectTypeCode93Code, AVMetadataObjectTypeUPCECode, AVMetadataObjectTypePDF417Code, AVMetadataObjectTypeEAN13Code, AVMetadataObjectTypeAztecCode]
@@ -86,7 +87,9 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         
         // send message
         if let _ = keys {
-            url  = keys?["hrbot_url"] as! String
+            url  = keys?["hrbot_url"] as? String
+        } else {
+            print("no hrbot url!")
         }
         
     }
@@ -125,32 +128,45 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         }
     }
     
+//    takes in the qr code string and attempts to decode it and send it to hr bot
     func checkUserIntoHRBot(string: String?) {
-        
-        var data = [ // json data
+        var qr_data = [ // json data; default is error
             "username": "error"
         ]
-        data["username"] = "1"
-
+        
+        // attempt to add string to json; if already saw string then return
         if let _ = string {
-            do {
-                // example json string
-                // var jsonStr = "{\"weather\":[{\"id\":804,\"main\":\"Clouds\",\"description\":\"overcast clouds\",\"icon\":\"04d\"}],}"
-                var data = string!.dataUsingEncoding(NSASCIIStringEncoding, allowLossyConversion: false)
-                var json: AnyObject! = try NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers)
-
-                if let username = json["username"] as? String {
-//                    data["username"] = "1"
-                }
-            } catch {
-                print("error serializing JSON: \(error)")
+            if (checkedInUsers.contains(string!)) {
+                print("Already checked in \(string)\n")
+                return
+            } else {
+                checkedInUsers.insert(string!)
+                qr_data = [ // json data
+                    //            "username": "error"
+                    "username": string!
+                ]
             }
         }
+
+//        if let _ = string {
+//            do {
+//                // example json string
+//                // var jsonStr = "{\"weather\":[{\"id\":804,\"main\":\"Clouds\",\"description\":\"overcast clouds\",\"icon\":\"04d\"}],}"
+//                let data = string!.dataUsingEncoding(NSASCIIStringEncoding, allowLossyConversion: false)
+//                let json: AnyObject! = try NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers)
+//                if let _ = json["username"] as? String {
+//                    qr_data["username"] = "1"
+//                }
+//            } catch {
+//                print("error serializing JSON: \(error)")
+//            }
+//        }
         
         if let _ = url {
-            Alamofire.request(.POST, url!, parameters: data, encoding: .JSON)
+            Alamofire.request(.POST, url!, parameters: qr_data, encoding: .JSON)
+            print("sent POST with data \n\t\(qr_data) \nto url \n\t\(url)\n")
         } else {
-            // error; no url from secret.plist
+            print("error: no url from secret.plist")
         }
     }
 }

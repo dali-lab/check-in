@@ -174,7 +174,6 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         }
         
         videoPreviewLayer?.frame = view.layer.bounds
-        print(videoPreviewLayer?.connection.videoScaleAndCropFactor)
     }
 
 //    takes in the qr code string and attempts to decode it and send it to hr bot

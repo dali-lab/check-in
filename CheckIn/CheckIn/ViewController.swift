@@ -15,10 +15,13 @@ import Alamofire
 class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     
     @IBOutlet weak var messageLabel:UILabel!
+    @IBOutlet weak var refresh: UIImageView!
 
     var captureSession:AVCaptureSession?
     var videoPreviewLayer:AVCaptureVideoPreviewLayer?
     var qrCodeFrameView:UIView?
+    
+    var qrCodeInView = false
     
     var url: String? // hrbot heroku url
     var checkedInUsers: Set<String> = [] // users already checked in; don't recheck them in!
@@ -56,6 +59,10 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
             videoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
             videoPreviewLayer?.videoGravity = AVLayerVideoGravityResizeAspectFill
             videoPreviewLayer?.frame = view.layer.bounds
+            
+            NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ViewController.rotated), name: UIDeviceOrientationDidChangeNotification, object: nil)
+
+            
             view.layer.addSublayer(videoPreviewLayer!)
             
             // Start video capture
@@ -92,6 +99,11 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
             print("no hrbot url!")
         }
         
+        let profileTap = UITapGestureRecognizer(target: self, action:#selector(ViewController.refreshUsers))
+        refresh.userInteractionEnabled = true
+        refresh.addGestureRecognizer(profileTap)
+        view.bringSubviewToFront(refresh)
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -104,7 +116,8 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         // Check if the metadataObjects array is not nil and it contains at least one object.
         if metadataObjects == nil || metadataObjects.count == 0 {
             qrCodeFrameView?.frame = CGRectZero
-            messageLabel.text = "No barcode/QR code is detected"
+            messageLabel.text = "Ready to check users in!"
+            qrCodeInView = false
             return
         }
         
@@ -120,14 +133,50 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
             let barCodeObject = videoPreviewLayer?.transformedMetadataObjectForMetadataObject(metadataObj)
             qrCodeFrameView?.frame = barCodeObject!.bounds
             
-            // update metadata- add stuff here!
-            if metadataObj.stringValue != nil {
+            // if this isn't the first time a qr code was in view then update message label and check user in
+            if metadataObj.stringValue != nil && !qrCodeInView {
                 messageLabel.text = metadataObj.stringValue
                 checkUserIntoHRBot(metadataObj.stringValue)
+                qrCodeInView = true
             }
         }
     }
     
+    func getVideoOrientation(deviceOrientation: UIDeviceOrientation) -> AVCaptureVideoOrientation {
+        print(deviceOrientation.rawValue)
+        if deviceOrientation.isPortrait {
+            print("p")
+            return AVCaptureVideoOrientation.Portrait
+        } else if deviceOrientation.isLandscape {
+            print("ll")
+            return AVCaptureVideoOrientation.LandscapeLeft
+        } else if deviceOrientation == UIDeviceOrientation.LandscapeRight {
+            print("lr")
+            return AVCaptureVideoOrientation.LandscapeRight
+        } else {
+            print("pu")
+            return AVCaptureVideoOrientation.PortraitUpsideDown
+        }
+    }
+    
+    // update video preview on rotation
+    func rotated() {
+        if (UIDevice.currentDevice().orientation == UIDeviceOrientation.Portrait){
+            videoPreviewLayer?.connection.videoOrientation = AVCaptureVideoOrientation.Portrait
+        } else if (UIDevice.currentDevice().orientation == UIDeviceOrientation.PortraitUpsideDown){
+            videoPreviewLayer?.connection.videoOrientation = AVCaptureVideoOrientation.PortraitUpsideDown
+        } else if (UIDevice.currentDevice().orientation == UIDeviceOrientation.LandscapeRight){
+            videoPreviewLayer?.connection.videoOrientation = AVCaptureVideoOrientation.LandscapeLeft
+
+        } else if (UIDevice.currentDevice().orientation == UIDeviceOrientation.LandscapeLeft){
+            videoPreviewLayer?.connection.videoOrientation = AVCaptureVideoOrientation.LandscapeRight
+
+        }
+        
+        videoPreviewLayer?.frame = view.layer.bounds
+        print(videoPreviewLayer?.connection.videoScaleAndCropFactor)
+    }
+
 //    takes in the qr code string and attempts to decode it and send it to hr bot
     func checkUserIntoHRBot(string: String?) {
         var qr_data = [ // json data; default is error
@@ -138,6 +187,7 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         if let _ = string {
             if (checkedInUsers.contains(string!)) {
                 print("Already checked in \(string)\n")
+                messageLabel.text = "Already checked in " + messageLabel.text!
                 return
             } else {
                 checkedInUsers.insert(string!)
@@ -168,6 +218,12 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         } else {
             print("error: no url from secret.plist")
         }
+    }
+    
+    func refreshUsers() {
+        messageLabel.text = "Ready to check people in!"
+        checkedInUsers = []
+        qrCodeInView = false
     }
 }
 

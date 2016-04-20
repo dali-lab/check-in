@@ -11,11 +11,14 @@
 import UIKit
 import AVFoundation
 import Alamofire
+import SCLAlertView
 
 class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     
+    @IBOutlet weak var messageBackground: UILabel!
     @IBOutlet weak var messageLabel:UILabel!
     @IBOutlet weak var refresh: UIImageView!
+    @IBOutlet weak var picture: UIImageView!
 
     var captureSession:AVCaptureSession?
     var videoPreviewLayer:AVCaptureVideoPreviewLayer?
@@ -34,7 +37,8 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
 
         // Get an instance of the AVCaptureDevice class to initialize a device object and provide the video
         // as the media type parameter.
-        let captureDevice = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
+//        let captureDevice = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
+        let captureDevice = getCamera(AVCaptureDevicePosition.Front);
         
         do {
             // Get an instance of the AVCaptureDeviceInput class using the previous device object.
@@ -62,14 +66,11 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
             
             NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ViewController.rotated), name: UIDeviceOrientationDidChangeNotification, object: nil)
 
-            
             view.layer.addSublayer(videoPreviewLayer!)
             
             // Start video capture
             captureSession?.startRunning()
-            
-            // Move the message label to the top view
-            view.bringSubviewToFront(messageLabel)
+
             
             // Initialize QR Code Frame to highlight the QR code
             qrCodeFrameView = UIView()
@@ -86,23 +87,40 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
             print(error)
             return
         }
-        
-        var keys: NSDictionary?
-        if let path = NSBundle.mainBundle().pathForResource("secret", ofType: "plist") {
-            keys = NSDictionary(contentsOfFile: path)
-        }
-        
-        // send message
-        if let _ = keys {
-            url  = keys?["hrbot_url"] as? String
-        } else {
-            print("no hrbot url!")
-        }
+
         
         let profileTap = UITapGestureRecognizer(target: self, action:#selector(ViewController.refreshUsers))
         refresh.userInteractionEnabled = true
         refresh.addGestureRecognizer(profileTap)
         view.bringSubviewToFront(refresh)
+        
+        view.bringSubviewToFront(picture)
+        view.bringSubviewToFront(messageBackground)
+        view.bringSubviewToFront(messageLabel)
+        
+    }
+    
+
+    // sclalertview has be to called here once the Window exists
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        // get url
+        var keys: NSDictionary?
+        if let path = NSBundle.mainBundle().pathForResource("secret", ofType: "plist") {
+            keys = NSDictionary(contentsOfFile: path)
+        }
+        if let _ = keys {
+            url  = keys?["hrbot_url"] as? String
+        } else {
+            SCLAlertView().showWarning("No URL for HRBot", subTitle: "No plist containing a URL for HRBot found. Check-ins won't get posted to Slack or update in the spreadsheet.")
+            print("no hrbot url!")
+        }
+        
+        if (!NetworkConnection.isConnectedToNetwork()) {
+            SCLAlertView().showWarning("No network connection", subTitle: "Check-ins won't get posted to Slack or update in the spreadsheet.")
+            print("no network connection!")
+        }
         
     }
 
@@ -116,8 +134,9 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         // Check if the metadataObjects array is not nil and it contains at least one object.
         if metadataObjects == nil || metadataObjects.count == 0 {
             qrCodeFrameView?.frame = CGRectZero
-            messageLabel.text = "Ready to check users in!"
+            messageLabel.text = "Ready to check people in!"
             qrCodeInView = false
+//            updateImage(nil, show: false)
             return
         }
         
@@ -135,11 +154,39 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
             
             // if this isn't the first time a qr code was in view then update message label and check user in
             if metadataObj.stringValue != nil && !qrCodeInView {
-                messageLabel.text = metadataObj.stringValue
+                messageLabel.text = "Hey " + metadataObj.stringValue + "!"
                 checkUserIntoHRBot(metadataObj.stringValue)
                 qrCodeInView = true
             }
         }
+    }
+    
+    func updateImage(response: String?, show: Bool) {
+        if show {
+            if let _ = response {
+                
+            } else {
+                picture.alpha = 1.0
+                picture.image = UIImage(named: "slack")
+                UIView.animateWithDuration(1, delay: 1, options: .CurveEaseOut, animations: {
+                    
+                    self.picture.alpha = 0.0
+
+                    }, completion: nil)
+            }
+            print("set image")
+        } else {
+            picture.image = nil
+        }
+    }
+    
+    func getCamera(position: AVCaptureDevicePosition) -> AVCaptureDevice {
+        for device in AVCaptureDevice.devicesWithMediaType(AVMediaTypeVideo) {
+            if device.position == AVCaptureDevicePosition.Front {
+                return device as! AVCaptureDevice
+            }
+        }
+        return AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
     }
     
     func getVideoOrientation(deviceOrientation: UIDeviceOrientation) -> AVCaptureVideoOrientation {
@@ -186,7 +233,7 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         if let _ = string {
             if (checkedInUsers.contains(string!)) {
                 print("Already checked in \(string)\n")
-                messageLabel.text = "Already checked in " + messageLabel.text!
+                messageLabel.text = "Already checked you in " + string! + "!"
                 return
             } else {
                 checkedInUsers.insert(string!)
@@ -196,23 +243,11 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
                 ]
             }
         }
-
-//        if let _ = string {
-//            do {
-//                // example json string
-//                // var jsonStr = "{\"weather\":[{\"id\":804,\"main\":\"Clouds\",\"description\":\"overcast clouds\",\"icon\":\"04d\"}],}"
-//                let data = string!.dataUsingEncoding(NSASCIIStringEncoding, allowLossyConversion: false)
-//                let json: AnyObject! = try NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers)
-//                if let _ = json["username"] as? String {
-//                    qr_data["username"] = "1"
-//                }
-//            } catch {
-//                print("error serializing JSON: \(error)")
-//            }
-//        }
         
+        // send POST
         if let _ = url {
             Alamofire.request(.POST, url!, parameters: qr_data, encoding: .JSON)
+            updateImage(nil, show: true)
             print("sent POST with data \n\t\(qr_data) \nto url \n\t\(url)\n")
         } else {
             print("error: no url from secret.plist")
@@ -220,7 +255,7 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     }
     
     func refreshUsers() {
-        messageLabel.text = "Ready to check people in!"
+        messageLabel.text = "I just reset who's checked in, go ahead and check in again!" // doesn't change the google doc, only what the app remembers!
         checkedInUsers = []
         qrCodeInView = false
     }

@@ -8,6 +8,7 @@ use_frameworks!
 target 'CheckIn' do
 
 pod 'Alamofire'
+pod 'SCLAlertView'
 
 end
 

@@ -24,10 +24,13 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     var videoPreviewLayer:AVCaptureVideoPreviewLayer?
     var qrCodeFrameView:UIView?
     
+    @IBOutlet weak var placeQRHere: UIImageView!
     var qrCodeInView = false
     
     var url: String? // hrbot heroku url
     var checkedInUsers: Set<String> = [] // users already checked in; don't recheck them in!
+    
+    let defaultText = "Show your QR code to check in!"
     
     // Added to support different barcodes
     let supportedBarCodes = [AVMetadataObjectTypeQRCode, AVMetadataObjectTypeCode128Code, AVMetadataObjectTypeCode39Code, AVMetadataObjectTypeCode93Code, AVMetadataObjectTypeUPCECode, AVMetadataObjectTypePDF417Code, AVMetadataObjectTypeEAN13Code, AVMetadataObjectTypeAztecCode]
@@ -94,9 +97,13 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         refresh.addGestureRecognizer(profileTap)
         view.bringSubviewToFront(refresh)
         
+
+        view.bringSubviewToFront(placeQRHere)
         view.bringSubviewToFront(picture)
         view.bringSubviewToFront(messageBackground)
         view.bringSubviewToFront(messageLabel)
+        
+        messageLabel.text = defaultText
         
     }
     
@@ -134,7 +141,7 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         // Check if the metadataObjects array is not nil and it contains at least one object.
         if metadataObjects == nil || metadataObjects.count == 0 {
             qrCodeFrameView?.frame = CGRectZero
-            messageLabel.text = "Ready to check people in!"
+            messageLabel.text = defaultText
             qrCodeInView = false
 //            updateImage(nil, show: false)
             return

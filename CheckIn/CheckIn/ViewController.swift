@@ -30,7 +30,7 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     var url: String? // hrbot heroku url
     var checkedInUsers: Set<String> = [] // users already checked in; don't recheck them in!
     
-    let defaultText = "Show your QR code to check in!"
+    let defaultText = "Line up your QR code with the image below!"
     
     // Added to support different barcodes
     let supportedBarCodes = [AVMetadataObjectTypeQRCode, AVMetadataObjectTypeCode128Code, AVMetadataObjectTypeCode39Code, AVMetadataObjectTypeCode93Code, AVMetadataObjectTypeUPCECode, AVMetadataObjectTypePDF417Code, AVMetadataObjectTypeEAN13Code, AVMetadataObjectTypeAztecCode]

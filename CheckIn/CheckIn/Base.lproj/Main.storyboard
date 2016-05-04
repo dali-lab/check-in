@@ -56,7 +56,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <imageView userInteractionEnabled="NO" alpha="0.29999999999999999" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="qr_code" translatesAutoresizingMaskIntoConstraints="NO" id="HhQ-2b-zBq">
-                                <rect key="frame" x="92" y="92" width="416" height="416"/>
+                                <rect key="frame" x="92" y="77" width="416" height="416"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="416" id="A9Z-eC-7em"/>
                                     <constraint firstAttribute="width" secondItem="HhQ-2b-zBq" secondAttribute="height" multiplier="1:1" id="hPq-85-PL3"/>
@@ -77,7 +77,7 @@
                             <constraint firstItem="2q6-J0-b38" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="8" symbolic="YES" id="jS2-AH-jn7"/>
                             <constraint firstItem="Th3-eq-eDK" firstAttribute="top" secondItem="Fux-sd-Ltk" secondAttribute="top" id="rtJ-Ad-uXl"/>
                             <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="qb2-7Z-iJg" secondAttribute="bottom" constant="317" id="sWm-4x-9xu"/>
-                            <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="HhQ-2b-zBq" secondAttribute="bottom" constant="92" id="yjV-G6-ebb"/>
+                            <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="HhQ-2b-zBq" secondAttribute="bottom" constant="107" id="yjV-G6-ebb"/>
                             <constraint firstItem="HhQ-2b-zBq" firstAttribute="centerX" secondItem="qb2-7Z-iJg" secondAttribute="centerX" id="zdu-ko-rMs"/>
                         </constraints>
                         <variation key="default">

@@ -37,6 +37,9 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(ViewController.rotated), name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
 
         // Get an instance of the AVCaptureDevice class to initialize a device object and provide the video
         // as the media type parameter.
@@ -66,8 +69,6 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
             videoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
             videoPreviewLayer?.videoGravity = AVLayerVideoGravityResizeAspectFill
             videoPreviewLayer?.frame = view.layer.bounds
-            
-            NotificationCenter.default.addObserver(self, selector: #selector(ViewController.rotated), name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
 
             view.layer.addSublayer(videoPreviewLayer!)
             
@@ -266,6 +267,10 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         messageLabel.text = "I just reset who's checked in, go ahead and check in again!" // doesn't change the google doc, only what the app remembers!
         checkedInUsers = []
         qrCodeInView = false
+    }
+    
+    override func viewWillLayoutSubviews() {
+        videoPreviewLayer?.frame = view.frame
     }
 }
 

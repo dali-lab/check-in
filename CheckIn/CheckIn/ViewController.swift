@@ -238,16 +238,16 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         ]
         
         // attempt to add string to json; if already saw string then return
-        if let _ = string {
-            if (checkedInUsers.contains(string!)) {
+        if let string = string {
+            if (checkedInUsers.contains(string)) {
                 print("Already checked in \(string)\n")
-                messageLabel.text = "Already checked you in " + string! + "!"
+                messageLabel.text = "Already checked you in " + string + "!"
                 return
             } else {
-                checkedInUsers.insert(string!)
+                checkedInUsers.insert(string)
                 qr_data = [ // json data
                     //            "username": "error"
-                    "username": string!
+                    "username": string
                 ]
             }
         }

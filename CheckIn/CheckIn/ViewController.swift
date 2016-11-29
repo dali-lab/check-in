@@ -41,7 +41,7 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         // Get an instance of the AVCaptureDevice class to initialize a device object and provide the video
         // as the media type parameter.
 //        let captureDevice = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
-        let captureDevice = getCamera(AVCaptureDevicePosition.Front);
+        let captureDevice = getCamera(AVCaptureDevicePosition.front);
         
         do {
             // Get an instance of the AVCaptureDeviceInput class using the previous device object.
@@ -57,7 +57,7 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
             captureSession?.addOutput(captureMetadataOutput)
             
             // Set delegate and use the default dispatch queue to execute the call back
-            captureMetadataOutput.setMetadataObjectsDelegate(self, queue: dispatch_get_main_queue())
+            captureMetadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
 
             // Detect all the supported bar code
             captureMetadataOutput.metadataObjectTypes = supportedBarCodes
@@ -67,7 +67,7 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
             videoPreviewLayer?.videoGravity = AVLayerVideoGravityResizeAspectFill
             videoPreviewLayer?.frame = view.layer.bounds
             
-            NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ViewController.rotated), name: UIDeviceOrientationDidChangeNotification, object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(ViewController.rotated), name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
 
             view.layer.addSublayer(videoPreviewLayer!)
             
@@ -79,10 +79,10 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
             qrCodeFrameView = UIView()
             
             if let qrCodeFrameView = qrCodeFrameView {
-                qrCodeFrameView.layer.borderColor = UIColor.greenColor().CGColor
+                qrCodeFrameView.layer.borderColor = UIColor.green.cgColor
                 qrCodeFrameView.layer.borderWidth = 2
                 view.addSubview(qrCodeFrameView)
-                view.bringSubviewToFront(qrCodeFrameView)
+                view.bringSubview(toFront: qrCodeFrameView)
             }
             
         } catch {
@@ -93,15 +93,15 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
 
         
         let profileTap = UITapGestureRecognizer(target: self, action:#selector(ViewController.refreshUsers))
-        refresh.userInteractionEnabled = true
+        refresh.isUserInteractionEnabled = true
         refresh.addGestureRecognizer(profileTap)
-        view.bringSubviewToFront(refresh)
+        view.bringSubview(toFront: refresh)
         
 
-        view.bringSubviewToFront(placeQRHere)
-        view.bringSubviewToFront(picture)
-        view.bringSubviewToFront(messageBackground)
-        view.bringSubviewToFront(messageLabel)
+        view.bringSubview(toFront: placeQRHere)
+        view.bringSubview(toFront: picture)
+        view.bringSubview(toFront: messageBackground)
+        view.bringSubview(toFront: messageLabel)
         
         messageLabel.text = defaultText
         
@@ -109,12 +109,12 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     
 
     // sclalertview has be to called here once the Window exists
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         // get url
         var keys: NSDictionary?
-        if let path = NSBundle.mainBundle().pathForResource("secret", ofType: "plist") {
+        if let path = Bundle.main.path(forResource: "secret", ofType: "plist") {
             keys = NSDictionary(contentsOfFile: path)
         }
         if let _ = keys {
@@ -136,11 +136,11 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         // Dispose of any resources that can be recreated.
     }
 
-    func captureOutput(captureOutput: AVCaptureOutput!, didOutputMetadataObjects metadataObjects: [AnyObject]!, fromConnection connection: AVCaptureConnection!) {
+    func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputMetadataObjects metadataObjects: [Any]!, from connection: AVCaptureConnection!) {
         
         // Check if the metadataObjects array is not nil and it contains at least one object.
         if metadataObjects == nil || metadataObjects.count == 0 {
-            qrCodeFrameView?.frame = CGRectZero
+            qrCodeFrameView?.frame = CGRect.zero
             messageLabel.text = defaultText
             qrCodeInView = false
 //            updateImage(nil, show: false)
@@ -156,7 +156,7 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         if supportedBarCodes.contains(metadataObj.type) {
 //        if metadataObj.type == AVMetadataObjectTypeQRCode {
             // If the found metadata is equal to the QR code metadata then update the status label's text and set the bounds
-            let barCodeObject = videoPreviewLayer?.transformedMetadataObjectForMetadataObject(metadataObj)
+            let barCodeObject = videoPreviewLayer?.transformedMetadataObject(for: metadataObj)
             qrCodeFrameView?.frame = barCodeObject!.bounds
             
             // if this isn't the first time a qr code was in view then update message label and check user in
@@ -168,14 +168,14 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         }
     }
     
-    func updateImage(response: String?, show: Bool) {
+    func updateImage(_ response: String?, show: Bool) {
         if show {
             if let _ = response {
                 
             } else {
                 picture.alpha = 1.0
                 picture.image = UIImage(named: "slack")
-                UIView.animateWithDuration(1, delay: 1, options: .CurveEaseOut, animations: {
+                UIView.animate(withDuration: 1, delay: 1, options: .curveEaseOut, animations: {
                     
                     self.picture.alpha = 0.0
 
@@ -187,43 +187,43 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         }
     }
     
-    func getCamera(position: AVCaptureDevicePosition) -> AVCaptureDevice {
-        for device in AVCaptureDevice.devicesWithMediaType(AVMediaTypeVideo) {
-            if device.position == AVCaptureDevicePosition.Front {
+    func getCamera(_ position: AVCaptureDevicePosition) -> AVCaptureDevice {
+        for device in AVCaptureDevice.devices(withMediaType: AVMediaTypeVideo) {
+            if (device as AnyObject).position == AVCaptureDevicePosition.front {
                 return device as! AVCaptureDevice
             }
         }
-        return AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
+        return AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
     }
     
-    func getVideoOrientation(deviceOrientation: UIDeviceOrientation) -> AVCaptureVideoOrientation {
+    func getVideoOrientation(_ deviceOrientation: UIDeviceOrientation) -> AVCaptureVideoOrientation {
         print(deviceOrientation.rawValue)
         if deviceOrientation.isPortrait {
             print("p")
-            return AVCaptureVideoOrientation.Portrait
+            return AVCaptureVideoOrientation.portrait
         } else if deviceOrientation.isLandscape {
             print("ll")
-            return AVCaptureVideoOrientation.LandscapeLeft
-        } else if deviceOrientation == UIDeviceOrientation.LandscapeRight {
+            return AVCaptureVideoOrientation.landscapeLeft
+        } else if deviceOrientation == UIDeviceOrientation.landscapeRight {
             print("lr")
-            return AVCaptureVideoOrientation.LandscapeRight
+            return AVCaptureVideoOrientation.landscapeRight
         } else {
             print("pu")
-            return AVCaptureVideoOrientation.PortraitUpsideDown
+            return AVCaptureVideoOrientation.portraitUpsideDown
         }
     }
     
     // update video preview on rotation
     func rotated() {
-        if (UIDevice.currentDevice().orientation == UIDeviceOrientation.Portrait){
-            videoPreviewLayer?.connection.videoOrientation = AVCaptureVideoOrientation.Portrait
-        } else if (UIDevice.currentDevice().orientation == UIDeviceOrientation.PortraitUpsideDown){
-            videoPreviewLayer?.connection.videoOrientation = AVCaptureVideoOrientation.PortraitUpsideDown
-        } else if (UIDevice.currentDevice().orientation == UIDeviceOrientation.LandscapeRight){
-            videoPreviewLayer?.connection.videoOrientation = AVCaptureVideoOrientation.LandscapeLeft
+        if (UIDevice.current.orientation == UIDeviceOrientation.portrait){
+            videoPreviewLayer?.connection.videoOrientation = AVCaptureVideoOrientation.portrait
+        } else if (UIDevice.current.orientation == UIDeviceOrientation.portraitUpsideDown){
+            videoPreviewLayer?.connection.videoOrientation = AVCaptureVideoOrientation.portraitUpsideDown
+        } else if (UIDevice.current.orientation == UIDeviceOrientation.landscapeRight){
+            videoPreviewLayer?.connection.videoOrientation = AVCaptureVideoOrientation.landscapeLeft
 
-        } else if (UIDevice.currentDevice().orientation == UIDeviceOrientation.LandscapeLeft){
-            videoPreviewLayer?.connection.videoOrientation = AVCaptureVideoOrientation.LandscapeRight
+        } else if (UIDevice.current.orientation == UIDeviceOrientation.landscapeLeft){
+            videoPreviewLayer?.connection.videoOrientation = AVCaptureVideoOrientation.landscapeRight
 
         }
         
@@ -231,7 +231,7 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     }
 
 //    takes in the qr code string and attempts to decode it and send it to hr bot
-    func checkUserIntoHRBot(string: String?) {
+    func checkUserIntoHRBot(_ string: String?) {
         var qr_data = [ // json data; default is error
             "username": "error"
         ]
@@ -253,7 +253,8 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         
         // send POST
         if let _ = url {
-            Alamofire.request(.POST, url!, parameters: qr_data, encoding: .JSON)
+//            Alamofire.request(.POST, url!, parameters: qr_data, encoding: .json)
+            let _ = Alamofire.request(url!, method: .post, parameters: qr_data, encoding: JSONEncoding.default, headers: nil)
             updateImage(nil, show: true)
             print("sent POST with data \n\t\(qr_data) \nto url \n\t\(url)\n")
         } else {

@@ -101,12 +101,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 898F4FC51CAA299200519A57 /* Build configuration list for PBXNativeTarget "CheckIn" */;
 			buildPhases = (
-				B6AE7720DFA6331F8908797B /* Check Pods Manifest.lock */,
+				B6AE7720DFA6331F8908797B /* [CP] Check Pods Manifest.lock */,
 				898F4FAF1CAA299200519A57 /* Sources */,
 				898F4FB01CAA299200519A57 /* Frameworks */,
 				898F4FB11CAA299200519A57 /* Resources */,
-				DDD38868E0B60A9FAD8A86EE /* Embed Pods Frameworks */,
-				E6B0C696727448A6961A92CD /* Copy Pods Resources */,
+				DDD38868E0B60A9FAD8A86EE /* [CP] Embed Pods Frameworks */,
+				E6B0C696727448A6961A92CD /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -129,7 +129,8 @@
 				TargetAttributes = {
 					898F4FB21CAA299200519A57 = {
 						CreatedOnToolsVersion = 7.2.1;
-						DevelopmentTeam = 768827566S;
+						DevelopmentTeam = 94P93XVBFP;
+						LastSwiftMigration = 0810;
 					};
 				};
 			};
@@ -166,29 +167,29 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		B6AE7720DFA6331F8908797B /* Check Pods Manifest.lock */ = {
+		B6AE7720DFA6331F8908797B /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Check Pods Manifest.lock";
+			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		DDD38868E0B60A9FAD8A86EE /* Embed Pods Frameworks */ = {
+		DDD38868E0B60A9FAD8A86EE /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Embed Pods Frameworks";
+			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -196,14 +197,14 @@
 			shellScript = "\"${SRCROOT}/../Pods/Target Support Files/Pods-CheckIn/Pods-CheckIn-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		E6B0C696727448A6961A92CD /* Copy Pods Resources */ = {
+		E6B0C696727448A6961A92CD /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Copy Pods Resources";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -334,11 +335,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 94P93XVBFP;
 				INFOPLIST_FILE = CheckIn/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = DALI.CheckInIpadMini;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -350,11 +353,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 94P93XVBFP;
 				INFOPLIST_FILE = CheckIn/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = DALI.CheckInIpadMini;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

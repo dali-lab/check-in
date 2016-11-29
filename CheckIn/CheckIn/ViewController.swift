@@ -38,7 +38,6 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
         NotificationCenter.default.addObserver(self, selector: #selector(ViewController.rotated), name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
 
         // Get an instance of the AVCaptureDevice class to initialize a device object and provide the video
@@ -112,6 +111,21 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     // sclalertview has be to called here once the Window exists
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
+        
+        
+        if let array = UserDefaults.standard.value(forKey: "checkedInUsers") as? Set<String>, let date = UserDefaults.standard.value(forKey: "checkInDay") as? Date {
+            let otherDay = NSCalendar.current.dateComponents([.era, .year, .month, .day], from: date)
+            let today = NSCalendar.current.dateComponents([.era, .year, .month, .day], from: Date())
+            
+            if otherDay.era == today.era && otherDay.year == today.year && otherDay.month == today.month && otherDay.day == today.day {
+                self.checkedInUsers = array
+            }else{
+                UserDefaults.standard.set(self.checkedInUsers, forKey: "checkedInUsers")
+            }
+        }else{
+            UserDefaults.standard.set(Date(), forKey: "checkInDay")
+        }
         
         // get url
         var keys: NSDictionary?
@@ -245,6 +259,7 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
                 return
             } else {
                 checkedInUsers.insert(string)
+                UserDefaults.standard.set(checkedInUsers, forKey: "checkedInUsers")
                 qr_data = [ // json data
                     //            "username": "error"
                     "username": string

@@ -7,8 +7,8 @@ DEPENDENCIES:
   - SCLAlertView
 
 SPEC CHECKSUMS:
-  Alamofire: aa2e09d871c9160ac53c90e83c68064a94e3dfbe
-  SCLAlertView: 8a14ffc40590c619e183eed2298b854385f30be1
+  Alamofire: f499fb613201a0a870ec384fd5e1cc07ad3098ab
+  SCLAlertView: a5e422ee7663dc921a7b86e3a4bb4c44833bcdae
 
 PODFILE CHECKSUM: 7b8bbb31bb6adff64d8379c9b93f929caea32f1e
 

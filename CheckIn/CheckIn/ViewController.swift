@@ -19,6 +19,8 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     @IBOutlet weak var messageLabel:UILabel!
     @IBOutlet weak var refresh: UIImageView!
     @IBOutlet weak var picture: UIImageView!
+    @IBOutlet weak var cameraIcon: UIImageView!
+    @IBOutlet weak var leftArrow: UIImageView!
 
     var captureSession:AVCaptureSession?
     var videoPreviewLayer:AVCaptureVideoPreviewLayer?
@@ -102,6 +104,8 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         view.bringSubview(toFront: picture)
         view.bringSubview(toFront: messageBackground)
         view.bringSubview(toFront: messageLabel)
+        view.bringSubview(toFront: cameraIcon)
+        view.bringSubview(toFront: leftArrow)
         
         messageLabel.text = defaultText
         
@@ -157,6 +161,7 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         if metadataObjects == nil || metadataObjects.count == 0 {
             qrCodeFrameView?.frame = CGRect.zero
             messageLabel.text = defaultText
+            messageBackground.backgroundColor = UIColor(red: 170, green: 170, blue: 170, alpha: 0.5)
             qrCodeInView = false
 //            updateImage(nil, show: false)
             return
@@ -177,6 +182,7 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
             // if this isn't the first time a qr code was in view then update message label and check user in
             if metadataObj.stringValue != nil && !qrCodeInView {
                 messageLabel.text = "Hey " + metadataObj.stringValue + "!"
+                messageBackground.backgroundColor = UIColor(red: 102, green: 187, blue: 106, alpha: 0.5)
                 checkUserIntoHRBot(metadataObj.stringValue)
                 qrCodeInView = true
             }
@@ -259,7 +265,7 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
                 return
             } else {
                 checkedInUsers.insert(string)
-                UserDefaults.standard.set(checkedInUsers, forKey: "checkedInUsers")
+//                UserDefaults.standard.set(checkedInUsers, forKey: "checkedInUsers")
                 qr_data = [ // json data
                     //            "username": "error"
                     "username": string

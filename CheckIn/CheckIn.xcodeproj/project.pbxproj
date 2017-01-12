@@ -344,7 +344,7 @@
 				DEVELOPMENT_TEAM = 768827566S;
 				INFOPLIST_FILE = CheckIn/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = DALI.CheckInIpadMini2;
+				PRODUCT_BUNDLE_IDENTIFIER = DALI.CheckInIpadMini;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_VERSION = 3.0;
@@ -363,7 +363,7 @@
 				DEVELOPMENT_TEAM = 768827566S;
 				INFOPLIST_FILE = CheckIn/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = DALI.CheckInIpadMini2;
+				PRODUCT_BUNDLE_IDENTIFIER = DALI.CheckInIpadMini;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_VERSION = 3.0;

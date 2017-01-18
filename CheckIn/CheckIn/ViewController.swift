@@ -116,21 +116,6 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        
-        
-        if let array = UserDefaults.standard.value(forKey: "checkedInUsers") as? Set<String>, let date = UserDefaults.standard.value(forKey: "checkInDay") as? Date {
-            let otherDay = NSCalendar.current.dateComponents([.era, .year, .month, .day], from: date)
-            let today = NSCalendar.current.dateComponents([.era, .year, .month, .day], from: Date())
-            
-            if otherDay.era == today.era && otherDay.year == today.year && otherDay.month == today.month && otherDay.day == today.day {
-                self.checkedInUsers = array
-            }else{
-                UserDefaults.standard.set(self.checkedInUsers, forKey: "checkedInUsers")
-            }
-        }else{
-            UserDefaults.standard.set(Date(), forKey: "checkInDay")
-        }
-        
         // get url
         var keys: NSDictionary?
         if let path = Bundle.main.path(forResource: "secret", ofType: "plist") {
@@ -265,7 +250,6 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
                 return
             } else {
                 checkedInUsers.insert(string)
-//                UserDefaults.standard.set(checkedInUsers, forKey: "checkedInUsers")
                 qr_data = [ // json data
                     //            "username": "error"
                     "username": string

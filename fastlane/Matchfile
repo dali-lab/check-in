@@ -1,0 +1,4 @@
+git_url "git@github.com:dali-lab/ios-code-signing.git"
+# or use http://github.com/dali-lab/ios-code-signing.git if you usually use https links for github
+type "development" # The default type, can be: appstore, adhoc or development
+app_identifier "edu.dartmouth.DALI.CheckInApp" #replace with yours
